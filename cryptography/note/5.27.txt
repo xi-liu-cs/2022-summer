@@ -1,0 +1,75 @@
+private key encryption (ciphers)
+
+secret key encryption 3 algo:
+1. gen 
+k <- gen(·)
+no input, the key generation algorithm outputs the key k
+
+2. enc
+c <- enc(k, m)
+the encryption algorithm substitutes each letter of the message m
+by a letter k positions further in the alphabet
+
+3. dec
+m <- dec(k, c)
+decryption algorithm substitutes each letter of the ciphertext c
+by a letter k positions earlier in the alphabet
+
+assume adversary knows everything except keys
+
+1. caesar cipher 凯撒密码
+shift a character by a fixed offset
+secret key: shift number
+total number of keys = 26
+adversary can try possible key
+
+2. substitution cipher 替换式密码
+table mapping input letter to output letter
+total number of keys = 26!
+
+frequency analysis:
+some letters in english more frequent than others
+e = 12.5%
+t = 9.28%
+a = 8.04%
+
+in ciphertext, frequency of b = 12%
+e mapped to b
+repeating this
+
+frequency of bigrams
+th = 3.56%
+in = 2.43%
+
+if see a lot of rj in ciphertext
+t mapped to r, h mapped to j
+
+http://norvig.com/mayzner.html
+
+3. vigenere cipher 维吉尼亚密码
+rand string (ex: bae)
+
+enc: 
+repeat key to make equal to message len
+shift each letter of message by letter of key
+easier to write each character of key as a number rather than letter
+(same char can go to different char)
+
+dec:
+repeat key to make equal to ciphertext len
+shift back each letter of message by letter of key
+
+total number of keys = 26^n
+
+break
+step 1: guess len of key, say len = 3
+step 2: divide ciphertext into 3 parts
+observation: all of numbers separated by 3 are shifted by same letter
+say freq of g is 12%
+e mapped to g
+so key = b (shift of 2)
+repeat to find each letter of key
+
+enigma
+changing key everyday
+discrete log algo
