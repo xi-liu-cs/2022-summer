@@ -14,3 +14,8 @@ weight of quiz similar to homework
 Week 7: final project presentation
 5-10 pages per group
 Grading: half HW+quiz, half project
+
+https://www.cs.cmu.edu/~goyal/
+http://www.cs.cmu.edu/~goyal/15356/
+katz intro cryptography
+slide provided after lecture
