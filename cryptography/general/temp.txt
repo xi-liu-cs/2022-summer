@@ -28,3 +28,6 @@ slide provided after lecture
 
 5) Compute Discrete log of y=6 with respect to base g = 5 and modulas N = 7.
 6) (no need to submit): Read and understand notions of digital signatures, public key encryption, and key exchange. Understand the differences between these.
+
+https://www.cs.cmu.edu/~goyal/handouts/
+Saturday 6pm China time
