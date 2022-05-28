@@ -70,6 +70,74 @@ e mapped to g
 so key = b (shift of 2)
 repeat to find each letter of key
 
-enigma
-changing key everyday
+enigma, changing key everyday
 discrete log algo
+
+modular arithmetic
+a and b are equivalent mod n
+a and b have same reminder n
+a \equiv_n b
+
+addition mod n
+a \equiv_n b
+a' \equiv_n b'
+a + a' \equiv_n b + b'
+
+subtraction mod n
+-b is defined as b + (-b) = 0
+-b = n + (-b) // since n % n = 0
+
+negative mod 5
+n - 2 = 5 - 2 = 3 // since 3 + (-2) = 0
+n - 4 = 5 - 4 = 1
+
+mult mod n
+a \equiv_n b
+a' \equiv_n b'
+a * a' \equiv_n b * b'
+
+div mod n
+b^{-1} defined as b * b^{-1} = 1
+inverses mod 6
+1^{-1} = 1
+2^{-1} = undef
+...
+5^{-1} = 5
+
+when a have an inverse mod n?
+gcd(a, n) = 1
+if n is prime, all nonzeros have inverses
+
+modular arithmetic is friendly to large numbers, result at most n
+compute 2^x is hard for large x
+compute 2^x and write 2^x mod n is efficient
+
+g^a * g^b = g^{a + b}
+(g^a)^b = g^{ab}
+
+2337^32 mod 100 = ?
+need to get last 2 digits 
+idea 1:
+(2337 % 100) * (2337 % 100) = 1369
+(1369 % 100) * (2337 % 100) = ...
+
+idea 2:
+do not multiply 32 times, square 5 times
+2337^1 -> 2337^2 -> ... -> 2337^{32}
+
+2337^{34}
+2337^{32} * 2337^2
+
+2337^{53}
+53 = 32 + 16 + 4 + 1
+
+compute g^x mod N
+g, x, N <= n
+1. repeatedly square g, always mod N
+do n times
+2. mult together powers of g corresponding
+to binary representation of x
+
+discrete log problem
+given g, N, y, output x s.t. y = g^x mod N
+dlp is hard
