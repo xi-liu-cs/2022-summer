@@ -1,0 +1,16 @@
+caesar with key 3: x, y, z -> a, b, c
+vignere with key string 123: helloz -> igomqc
+
+affine cipher 仿射密碼
+1. map: a -> 0, ..., z -> 25
+2. select a multiplier, choose 7
+(multiplier must be coprime with 26)
+   select a adder, choose 11
+4. reduce each number using mod 26
+5. convert each number to corresponding char
+key: ac.m7.a11 (m = mult, a = add)
+
+if there is repetition in final row
+if repeated val in ciphertext, recipient cannot decrypt
+why no repeated val here?
+since multiplier is coprime with 26
