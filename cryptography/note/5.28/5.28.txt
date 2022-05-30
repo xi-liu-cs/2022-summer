@@ -14,3 +14,14 @@ if there is repetition in final row
 if repeated val in ciphertext, recipient cannot decrypt
 why no repeated val here?
 since multiplier is coprime with 26
+why coprime avoid repetition? 
+since we are dealing with the residue class of Z/26Z and that is our key has to be coprime with 26
+
+c = ciphertext
+m = msg, plaintext
+k = key
+
+c = enc(m, k)
+m = dec(c, k)
+
+if most text start with greeting msg, then a portion of text is known
