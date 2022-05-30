@@ -1,0 +1,167 @@
+\documentclass[12pt,border=4pt,multi]{article} % \documentclass[tikz,border=4pt,multi]{article}
+\usepackage{lingmacros}
+\usepackage{tree-dvips}
+\usepackage{amssymb} % mathbb{}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{forest}
+\usepackage{amsmath} % matrices
+\usepackage{xeCJK}
+\usepackage{tikz}
+\usepackage[arrowdel]{physics}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{listings}
+\usepackage{pgfplots, pgfplotstable}
+\usepackage{diagbox} % diagonal line in cell
+\usepackage[usestackEOL]{stackengine}
+\usepackage{multirow}
+\usepackage[T1]{fontenc} 
+\lstset{upquote = true}
+\graphicspath{{./img}} % specify the graphics path to be relative to the main .tex file, denoting the main .tex file directory as ./
+\definecolor{orchid}{rgb}{0.7, 0.4, 1.1}
+
+\begin{document}
+
+\section*{Xi Liu, Assignment 1}
+1\\
+key = 8\\
+plaintext = attack with full force as soon as the sun rises\\
+\begin{lstlisting}[language = c++, showstringspaces=false]
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+char * shift_dec(int key, char * cipher)
+{
+    int n = strlen(cipher);
+    char * ret = (char *)malloc((n + 1) * sizeof(char));
+    for(int i = 0; i < n; ++i)
+    {
+        if('a' <= cipher[i] && cipher[i] <= 'z')
+            ret[i] = ((cipher[i] - 'a' - key) % 26 + 26) % 26 + 'a';
+        else if('A' <= cipher[i] && cipher[i] <= 'Z')
+            ret[i] = ((cipher[i] - 'A' - key) % 26 + 26) % 26 + 'a';
+        else
+            ret[i] = cipher[i];
+    }
+    ret[n] = '\0';
+    return ret;
+}
+
+int main()
+{
+    const char * s = "ibbiks eqbp nctt nwzkm ia awwv ia bpm acv zqama";
+    for(int key = 1; key < 10; ++key)
+    {
+        char * ret = shift_dec(key, (char *)s);
+        printf("key = %d, %s\n", key, ret);
+        free(ret);
+    }
+}
+\end{lstlisting}
+\newpage
+\noindent
+2\\
+not secure\\
+suppose the keys are $a, b, c$, using those keys to encrypt 3 times is equivalent to encrypt 1 time using 1 key $a + b + c$, which can be decrypted by trying keys from 0 to 26 until the correct plain text is found
+\begin{lstlisting}[language = c++, showstringspaces=false]
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+char * shift_dec(int key, char * cipher); /* defined in question 1 */
+
+char * shift_enc(int key, char * message)
+{
+    int n = strlen(message);
+    char * ret = (char *)malloc((n + 1) * sizeof(char));
+    for(int i = 0; i < n; ++i)
+    {
+        if('a' <= message[i] && message[i] <= 'z')
+            ret[i] = (message[i] - 'a' + key) % 26 + 'a';
+        else if('A' <= message[i] && message[i] <= 'Z')
+            ret[i] = (message[i] - 'A' + key) % 26 + 'A';
+        else
+            ret[i] = message[i];
+    }
+    ret[n] = '\0';
+    return ret;
+}
+
+int main()
+{
+    srand(time(0));
+    int n = 3;
+    int keys[n];
+    for(int i = 0; i < n; ++i)
+    {
+        keys[i] = rand() % 26;
+        printf("key[%d] = %d\n", i, keys[i]);
+    }
+
+    const char * message = "abc";
+    char * ptr = shift_enc(*keys, (char *)message);
+    for(int i = 1; i < n; ++i)
+    {
+        char * prev = ptr;
+        ptr = shift_enc(keys[i], ptr);
+        free(prev);
+    }
+    printf("encrypted ciphertext = %s\n", ptr);
+
+    for(int key = 0; key < 26; ++key)
+    {
+        char * ret = shift_dec(key, (char *)ptr);
+        printf("key = %d, %s\n", key, ret);
+        free(ret);
+    }
+}
+\end{lstlisting}
+\newpage
+\noindent
+3\\
+let $n$ be the message length\\
+then 1 way is to try all of $26^n$ possible permutations, but this is not practical when $n$ is large\\
+cannot use frequency analysis here since each shift only appears once, since key length = message length = $n$\\
+\newpage
+\noindent
+4\\
+7 multiplications are used\\
+the numbers that I had to multiply have 2 digits\\
+\begin{align*}
+41 &= 32 + 8 + 1 = 2^5 + 2^3 + 2^0\\
+\\
+3292213^2 \mod 100 &= 13^2 \mod 100 = 69\\
+3292213^4 \mod 100 &= (3292213^2 \mod 100)^2 = 69^2 \mod 100 = 61\\
+3292213^8 \mod 100 &= (3292213^4 \mod 100)^2 = 61^2 \mod 100 = 21\\
+3292213^{16} \mod 100 &= (3292213^8 \mod 100)^2 = 21^2 \mod 100 = 41\\
+3292213^{32} \mod 100 &= (3292213^{16} \mod 100)^2 = 41^2 \mod 100 = 81\\
+3292213^{41} \mod 100 &= (3292213^{32} \mod 100)(3292213^8 \mod 100)(3292213^1 \mod 100)\\
+&= (81)(21)(13) \mod 100\\ 
+&= ((81)(21) \mod 100) * 13) \mod 100 = 1 * 13 \mod 100 = 13\\
+\end{align*}
+\newpage
+\noindent
+5\\
+\begin{align*}
+y &= g^x \mod N\\
+6 &= 5^x \mod 7\\
+\end{align*}
+use trial and error\\
+\boxed{$x = 3$}\\
+$5^3 = 125 = 17 * 7 + 6\\
+5^3 \mod 7 = (17 * 7 + 6) \mod 7 = 6$
+\begin{lstlisting}[language = c++, showstringspaces=false]
+#include <stdio.h>
+#include <math.h>
+
+int main()
+{
+    for(int i = 0; i < 10; ++i)
+    {
+        float res = pow(5, i);
+        printf("5^%d = %f, 5^%d %% 7 = %d\n", i, res, i, (int)res % 7);   
+    }
+}
+\end{lstlisting}
+\end{document}
