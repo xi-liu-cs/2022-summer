@@ -1,1 +1,34 @@
+secret sharing: multiple people together to reconstruct a secret
+in a (t, n) secret scheme, 'n' users each with piece of puzzle
+secret is successfully reconstructed only if at least 't' users come together
 
+n = 10, t = 3
+1 person have 10 sons
+instead give map of treasure
+give a piece of map to each person
+if son >= 3 come together, then can reconstruct map
+
+reconstruct: calculate secret
+
+if(#inputs > t)
+  output(treasure location)
+else
+  output(random location)
+  
+each of n users have unique key
+
+cloud server storage: 10 users
+key value revealed iff users >= 5 come together
+
+adi shamir 阿迪萨莫尔
+2 points sufficient to define a line
+3 points sufficient to define a parabola
+4 points sufficient to define a cubic curve
+k points sufficient to define a polynomial of degree (k - 1)
+
+degree of a polynomial is the highest of the degrees of the polynomial's monomials (individual terms) with non-zero coefficients
+for example, the polynomial 7x^{2}y^{3}+4x-9, which can also be written as 7x^{2}y^{3}+4x^{1}y^{0}-9x^{0}y^{0} has three terms
+the first term has a degree of 5 (the sum of the powers 2 and 3)
+the second term has a degree of 1
+and the last term has a degree of 0
+so, the polynomial has a degree of 5
