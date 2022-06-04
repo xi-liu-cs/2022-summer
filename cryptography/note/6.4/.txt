@@ -1,0 +1,93 @@
+secure cipher: one time password
+bitwise xor of 2 strings
+
+property: 
+s xor s = 0
+s xor 0 = s
+given (a xor b) and a, easy to find b
+
+m = msg
+k = key
+c = encrypted msg
+
+enc:
+c = m xor k
+
+dec:
+c xor k 
+= (m xor k) xor k 
+= m xor (k xor k)
+/* since k xor k = 0 */
+= m
+
+secure iff shared key is as long as msg
+
+day 1
+adv sees c1 = attack xor k
+at end of day, adv learns it was attack
+then recover key
+
+day 2
+if alice uses same key, recover msg immediately
+
+attack
+c1 = m1 xor k
+c2 = m2 xor k
+c1 xor c2 = (m1 xor k) xor (m2 xor k) = m1 xor m2 xor (k xor k) = m1 xor m2
+
+quantum computers can do factoring and discrete log efficiently
+
+first should meet in person to exchange key k
+
+public key enc
+public key only enc, enc(msg, k_public) = cipher
+private key dec, dec(cipher, k_private) = msg
+
+rivest shamir adleman (rsa) paper
+c' = c xor attack xor defend
+if c = k xor attack
+c' = c xor attack xor defend
+= (k xor attack) xor attack xor defend
+= k xor defend
+
+digital signature
+1. gen: output verification key (vk), secret key (sk)
+2. sign: input sk and msg, output sigma (signature)
+3. verify: input(msg, sigma, vk), output 0 or 1
+
+new directions in crypto
+https://ee.stanford.edu/~hellman/publications/24.pdf
+
+dicrete log problem
+given g, N, g^x % N, output x
+
+computational diffie hellman (cdh) problem
+1. find a from g^a
+2. compute (g^b)^a = g^{ab}
+
+hard to compute x s.t. y = f(x)
+
+easy to invert
+f(x) = x
+
+define one way function
+f(x) = g^x % N
+hard to compute x
+
+server do not store password directly
+1. server only stores f(p), a one way function or hash of the password
+2. client still sends p, server computes f(p) and matches
+3. even if adv learns f(p) by hacking, computing p is hard
+
+if you forget password, server cannot give old password back to you
+can reset instead
+
+given f(p)
+adv can compute p' s.t. f(p') = f(p), server still accepts
+
+adv watching network
+sol
+use https to open secure connection first
+(client encrypts all messages under server's public key)
+
+verification key can be used for verfication of signature, not for computation
