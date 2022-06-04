@@ -1,1 +1,91 @@
+input (read) -> process (think) -> output (write)
+high quality volume read
 
+can be defined
+open question, can be debated
+show contribution
+research everything first, model, then document results
+do not research a little and document a little
+
+theoretical paper
+formal
+
+科学 (客观, 唯实)
+规范 (格式)
+创新 (突破人类认识的边界)
+踩巨人的肩膀
+以别人的结果作为自己的起点
+
+结构
+1. title, author info
+2. abstract, keywords
+3. intro, 前人做了什么, 要做什么改进
+4. main body
+5. conclusion
+6. reference
+
+world war 1, 2
+reading difficulty if no template
+
+短道速滑用花样滑冰的方法怎么赢
+
+平静生活
+意外挑战
+迎难而上
+千难万险
+克敌制胜
+衣锦还乡
+
+不跑题
+提到为啥课题重要
+
+主角  课题
+身世  背景
+悬疑  问题 不足
+旅程  文献 实验
+胜利  结果
+解开谜底  结论  
+
+每一步踏稳
+
+课题确定: 意义, 可行性
+课题研究: 文献检索, 阅读, 方法论确定
+写作修改
+投递返修: 根据写稿意见修改
+
+课题确定: 自由探索类型
+
+意义
+解决某个领域问题 填补研究空白
+
+可行性分析
+足够支持, 有效数据, 实验设备
+知识能力
+宽泛狭窄
+
+研究兴趣
+看教授写过的东西
+
+创新性
+老瓶装新酒 新瓶装老酒
+
+教授在该领域走这么多年
+一两句话就是重要的点拨
+
+database
+ei: ei compendex
+iel: ieee electronic library
+acm
+inspec
+aps
+aip
+
+engine
+google scholar
+engineering index
+
+digital object identifier
+
+鸟瞰镜头
+掌握内容
+深度理解
