@@ -1,1 +1,4 @@
 https://zacharyratliff.org/Lamport-Signatures/
+
+int.from_bytes()
+https://docs.python.org/3/library/stdtypes.html
