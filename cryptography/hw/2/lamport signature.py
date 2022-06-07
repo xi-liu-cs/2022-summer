@@ -22,7 +22,7 @@ def keygen():
 # sign message using lamport one-time signature
 def sign(m, sk):
     sig = [0] * col
-    h = int.from_bytes(hashlib.sha256(m.encode(char_enc)).digest(), byte_order)
+    h = int.from_bytes(hashlib.sha256(m.encode(char_enc)).digest(), byte_order) # return the integer represented by the given array of bytes
     for i in range(0, col):
         b = h >> i & 1
         sig[i] = sk[b][i]
