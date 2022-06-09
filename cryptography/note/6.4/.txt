@@ -55,9 +55,6 @@ digital signature
 2. sign: input sk and msg, output sigma (signature)
 3. verify: input(msg, sigma, vk), output 0 or 1
 
-new directions in crypto
-https://ee.stanford.edu/~hellman/publications/24.pdf
-
 dicrete log problem
 given g, N, g^x % N, output x
 
