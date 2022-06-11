@@ -1,0 +1,40 @@
+K = g^{ab} = A^b = B^a
+elgamal
+
+adversary sees
+pk = (n, g, g^a)
+c = (g^b, m * g^{ab})
+
+secure sockets layer
+digital signed statement is certificate
+
+1. google send pk. certificate to alice
+2. cannot be changed 
+3. vk_{authority} is inside brower/os
+
+create digital currency using digital signatures
+can make copies of digitally signed statement
+
+ledger 分类帐 a book or other collection of financial accounts of a particular type
+public key = bitcoin address
+
+public ledger is written 1 "block" (page) at a time
+
+hash function h
+x -> h(x)
+a || b -> 0 (20 times) 0**
+
+for mining block i
+  collect list of transcation to be written: t_i
+  b_{i - 1} = prev block
+  compute number (nonce) r
+  h(b_{i - 1} || t_i || pk || r) = 0 (k times) 0**
+  b_i = h(b_{i - 1} || t_i || pk || r)
+  
+bitcoin mining is the process by which transactions are validated
+digitally on the bitcoin network and added to the blockchain ledger
+
+decentralized autonomous organization
+
+programming error: $421 million deleted
+transfer to bitcoin address that does not exist
