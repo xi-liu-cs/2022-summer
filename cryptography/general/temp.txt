@@ -34,4 +34,3 @@ Build an encrypted chat application like WhatsApp or WeChat
 Study a classical cipher like Enigma machine
 Goal for this week: meet with your group decide a topic
 Vipul@cmu.edu
-
