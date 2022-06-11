@@ -22,3 +22,16 @@ slide provided after lecture
 
 https://www.cs.cmu.edu/~goyal/handouts/
 Saturday 6pm China time
+
+Class 5: proposal presentation
+Every student needs to give a 3-4 min talk talk about the project problem, why it is interesting for you your plan for how you will work on the project what progress have you made so far
+Project ideas:
+proof of work vs proof of stake cryptocurrencies
+Take any other cryptocurrencies and study that Like how Ripple works, how ETH works
+Explore applications of digital signatures
+For example, build an system for signing transcripts digitally
+Build an encrypted chat application like WhatsApp or WeChat
+Study a classical cipher like Enigma machine
+Goal for this week: meet with your group decide a topic
+Vipul@cmu.edu
+
