@@ -30,6 +30,7 @@ for mining block i
   compute number (nonce) r s.t.
     h(b_{i - 1} || t_i || pk || r) = 0 (k times) 0**
   b_i = h(b_{i - 1} || t_i || pk || r)
+  new bitcoins are created and given as reward to public key pk
 
 bitcoin mining is the process by which transactions are validated
 digitally on the bitcoin network and added to the blockchain ledger
