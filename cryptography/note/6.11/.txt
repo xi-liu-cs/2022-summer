@@ -27,10 +27,10 @@ a || b -> 0 (20 times) 0**
 for mining block i
   collect list of transcation to be written: t_i
   b_{i - 1} = prev block
-  compute number (nonce) r
-  h(b_{i - 1} || t_i || pk || r) = 0 (k times) 0**
+  compute number (nonce) r s.t.
+    h(b_{i - 1} || t_i || pk || r) = 0 (k times) 0**
   b_i = h(b_{i - 1} || t_i || pk || r)
-  
+
 bitcoin mining is the process by which transactions are validated
 digitally on the bitcoin network and added to the blockchain ledger
 
