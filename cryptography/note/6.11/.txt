@@ -25,11 +25,11 @@ x -> h(x)
 a || b -> 0 (20 times) 0**
 
 for mining block i
-  collect list of transcation to be written: t_i
+  collect list of transaction to be written: t_i
   b_{i - 1} = prev block
   compute number (nonce) r s.t.
-    h(b_{i - 1} || t_i || pk || r) = 0 (k times) 0**
-  b_i = h(b_{i - 1} || t_i || pk || r)
+    h(b_{i - 1} || t_i || pk || n) = 0 (k times) 0**
+  b_i = h(b_{i - 1} || t_i || pk || n)
   new bitcoins are created and given as reward to public key pk
 
 bitcoin mining is the process by which transactions are validated
