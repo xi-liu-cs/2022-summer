@@ -1,0 +1,64 @@
+if reuse one time pad
+then c1 c2 can be used
+c1 = m1 xor k
+c2 = m2 xor k
+
+c1 xor c2 
+= (m1 xor k) xor (m2 xor k) 
+= m1 xor m2 xor k xor k 
+= m1 xor m2
+
+(m1 xor m2) xor m1 = (m1 xor m1) xor m2 = m2
+(m1 xor m2) xor m2 = (m2 xor m2) xor m1 = m1
+
+bitmapped images
+images have a lot of redundant content
+xor gives info about both
+
+public key crypto
+  pk of bob is available to everyone
+  sk (secret key) of bob is known only to bob
+
+  alice encrypts m with bob's pk
+  c = enc(m, pk)
+
+  bob reconstructs m from c using 
+  his sk
+  m = dec(c, sm)
+
+anyone can send msg to bob
+only bob can read msg send to him
+
+can I encrypt with the private key and someone else decrypt with the public key?
+then it is not a secret msg, since everyone can decrypt it
+
+we can use a digitally signed certificate (used by https) to authenticate the connection
+
+digital signature
+  sign key (sk) is available only to sender
+  verification key (vk) is publicly available
+
+  alice signs m with her sk
+  signature = sign(m, sk)
+
+  bob verifies alice's signature 
+  using alice's vk
+  verify(signature, vk) = 1
+
+  only alice can sign with her sk
+
+user send msg with signature to web app
+adversary copied signature from user 
+
+is it not successful since a new msg m_x produces a new signature?
+
+attach a timestamp to signature
+if the timestamp not match with current time
+
+sign first or encrypt first?
+enc allows confidentiality
+sign prevents forgery
+{enc(m, pk_{receiver}), sign(c, sk_{sender})} = {c, sigma}
+
+sign enc or enc sign are both problematic
+sign enc sign
