@@ -1,0 +1,10 @@
+https://crypto.stackexchange.com/questions/5715/phipq-p-1-q-1
+
+This is actually a special case of a more general property of the Euler totient function: it is a multiplicative function, meaning that, for any two coprime numbers p and q, ϕ(pq)=ϕ(p)ϕ(q).
+
+The special case where p and q are (distinct) primes is easy to prove. By definition, ϕ(n) gives the number of positive integers coprime to and smaller than n, i.e. the number of integers k satisfying 0<k<n and gcd(k,n)=1.
+
+Since p and q are the prime factors of pq, an integer k is coprime to pq if and only if it isn't a multiple of either p or q. In the range 0<k<pq there are p−1 distinct multiples of q, and q−1 distinct multiples of p, and a bit of thought shows that these two sets cannot overlap, as any positive number that was a multiple of both p and q would have to be at least as large as pq.
+
+Thus, out of the total pq−1 integers k in the range 0<k<pq, all but (p−1)+(q−1) are coprime to pq, and so
+ϕ(pq)=(pq−1)−(p−1)−(q−1)=pq−p−q+1=(p−1)(q−1).
