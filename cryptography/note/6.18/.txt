@@ -1,1 +1,34 @@
+encryption confidentiality
+signature integrity
+sign enc sign
 
+end to end (e2e) security
+how can we a have a system
+such that the system do not know what msg is
+
+extended triple diffie hellman (x3dh) protocol
+new key derived from old key
+
+forward secrecy
+k_1 -> k_2 -> ... -> k_n
+knowing key k_i do not allow decipher of previous keys
+
+identity key - associated with device
+signed prekey - generated during installation and changed periodically
+ephemeral one-time prekeys - lasts for one session
+(should be destroyed every time a new sender requests one)
+
+1. sender a receives all public keys of recipient b from server
+2. derive master key using
+  b's public keys
+  a's id key + ephemeral key
+3. sends a header with a's id key, ephemeral key, b's prekey identifiers
+and initial msg encrypted with master secret
+4. b calculates master secret
+
+double ratchet protocol
+k_1 -> k_2 -> ... k_i ... -> k_n
+
+sha (256 = num bits)
+
+root -> chain -> msg
