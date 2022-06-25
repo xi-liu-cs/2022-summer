@@ -34,3 +34,27 @@ Build an encrypted chat application like WhatsApp or WeChat
 Study a classical cipher like Enigma machine
 Goal for this week: meet with your group decide a topic
 Vipul@cmu.edu
+
+Next class; two parts
+1st part: lecture
+2nd part: quiz for 1 hour
+Quiz: 3 questions
+weightage: similar to each 
+We will discuss the correct 
+HW next week: small
+Last week: final 
+about 4.5 mins per student
+final presentation: discuss 
+don't have to repeat the same thing which you presentated today
+final report: 1 report per group
+final report: can be detailed
+can be 7-10 pages
+or can even be more if you need more space
+final report: due 5 days after the last class
+PDF format only
+Introduction, background search and previous works,
+your work
+final results
+link the code if you have
+1 paragraph about each student
+what they did
