@@ -103,7 +103,7 @@ int main()
 	mpz_init_set_str(_n, n_str, 10);
 	mpz_init(c);
 	mpz_powm(c, _msg, _e, _n);
-	gmp_printf("c = %Zd\n", c);
+	gmp_printf("ciphertext: %Zd\n", c);
 
 	/* decryption: m = (c ^ d) % n */
 	char * d_str = int_str(d);
