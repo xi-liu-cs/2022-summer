@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <gmpxx.h>
+#include <gmp.h>
 
 char * int_str(int a)
 {
