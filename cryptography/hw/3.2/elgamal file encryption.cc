@@ -59,7 +59,7 @@ void key_gen(key * res)
 	gmp_randstate_t state;
 	gmp_randinit_default(state);
 	time_t t;
-    srand((unsigned)time(&t)); 
+	srand((unsigned)time(&t)); 
 	
 	mpz_init_set_str(q, int_str(rand() % (1 << 10)), 10);
 
