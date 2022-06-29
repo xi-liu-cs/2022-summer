@@ -20,7 +20,6 @@ step k:     equation                                            quotient, remain
 0           r_{-2} = 1071 = q_0 * (r_{-1} = 462) + r_0          q_0 = 2, r_0 = 147
 1           r_{-1} = 462 = q_1 * (r_0 = 147) + r_1              q_1 = 3, r_1 = 21           
 2           r_0 = 147 = q_2 * (r_1 = 21) + r_2                  q_2 = 7, r_2 = 0 */
-   
 int euclid_gcd(int a, int b)
 {
     while(b)
