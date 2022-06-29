@@ -7,6 +7,7 @@
 #define file FILE 
 using namespace std;
 
+/* convert a integer to string */
 char * int_str(int a)
 {
 	int n_digit = log10(a) + 1,
@@ -41,55 +42,43 @@ char * file_str(file * fp)
 	return res;
 }
 
-
-struct pk
-{
-	mpz_t q, g, gx; /* g ^ x */
-};
-
-struct sk
-{	
-	mpz_t q, g, x;
-};
-
+/* pk = <q, g, g ^ x> 
+   sk = <q, g, x> */
 struct key
 {
-	pk pub_key;
-	sk sec_key;
+	mpz_t q, g, x, gx;
 };
 
-void key_gen()
+void key_gen(key * res)
 {
-	//#define q res.q
-	//#define g res.g
-	//#define gx res.gx
+	#define q res->q
+	#define g res->g
+	#define x res->x
+	#define gx res->gx
+
 	gmp_randstate_t state;
 	gmp_randinit_default(state);
 	time_t t;
-       	srand((unsigned)time(&t)); 
+    srand((unsigned)time(&t)); 
 	
-	mpz_t q;
 	mpz_init_set_str(q, int_str(rand() % (1 << 10)), 10);
-	
-	mpz_t g;
+
 	mpz_init(g);
 	mpz_urandomm(g, state, q);
-	
-	mpz_t x;
+
 	mpz_init(x);
 	mpz_urandomm(x, state, q); /* rand int in [0, q - 1] */
 
-	mpz_t gx;
 	mpz_init(gx);
 	mpz_pow_ui(gx, g, mpz_get_ui(x));
-	gmp_printf("%Zd\n", gx);
+	gmp_printf("gx = %Zd\n", gx);
 }
 
 int main()
 {
 	file * fp = fopen("t.txt", "r");
 	printf("%s\n", file_str(fp));
-	key_gen();
-	//key * k = key_gen();
-	//gmp_printf("%Zd\n", *((k->pub_key).gx));
+	key * res = (key *)malloc(sizeof(key));
+	key_gen(res);
+	gmp_printf("gx = %Zd\n", gx);
 }
