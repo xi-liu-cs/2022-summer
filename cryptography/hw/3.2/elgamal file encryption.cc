@@ -44,24 +44,24 @@ char * file_str(file * fp)
 
 /* pk = <q, g, g ^ x> 
    sk = <q, g, x> */
-struct key
+struct elgamal_key
 {
 	mpz_t q, g, x, gx;
 };
 
-void key_gen(key * res)
+void elgamal_key_gen(elgamal_key * res)
 {
 	#define q res->q
 	#define g res->g
 	#define x res->x
 	#define gx res->gx
 
-	gmp_randstate_t state;
-	gmp_randinit_default(state);
 	time_t t;
 	srand((unsigned)time(&t)); 
-	
 	mpz_init_set_str(q, int_str(rand() % (1 << 10)), 10);
+
+	gmp_randstate_t state;
+	gmp_randinit_default(state);
 
 	mpz_init(g);
 	mpz_urandomm(g, state, q);
@@ -72,13 +72,40 @@ void key_gen(key * res)
 	mpz_init(gx);
 	mpz_pow_ui(gx, g, mpz_get_ui(x));
 	gmp_printf("gx = %Zd\n", gx);
+
+	#undef q
+	#undef g
+	#undef x
+	#undef gx
+}
+
+void elgamal_encrypt
+(
+	mpz_t c1,
+	mpz_t c2,
+	mpz_t q,
+	mpz_t g,
+	mpz_t gx
+)
+{
+	time_t t;
+	srand((unsigned)time(&t)); 
+	
+	mpz_t y;
+	mpz_init_set_str(y, int_str(rand() % (1 << 10)), 10);
+
+	gmp_randstate_t state;
+	gmp_randinit_default(state);
+
+	mpz_init(y);
+	mpz_urandomm(y, state, q);
 }
 
 int main()
 {
 	file * fp = fopen("t.txt", "r");
 	printf("%s\n", file_str(fp));
-	key * res = (key *)malloc(sizeof(key));
-	key_gen(res);
-	gmp_printf("gx = %Zd\n", gx);
+	elgamal_key * res = (elgamal_key *)malloc(sizeof(elgamal_key));
+	elgamal_key_gen(res);
+	gmp_printf("gx = %Zd\n", res->gx);
 }
