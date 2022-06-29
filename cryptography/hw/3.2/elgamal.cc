@@ -21,13 +21,6 @@ char * int_str(int a)
 	return res;
 }
 
-/* convert a binary string to decimal integer */
-int bin_str_dec_int(char * a)
-{
-	int n = strlen(a);
-	
-}
-
 /* convert a file to binary string */
 char * file_str(file * fp)
 {
