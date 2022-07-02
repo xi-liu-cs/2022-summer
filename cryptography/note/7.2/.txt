@@ -1,1 +1,11 @@
+graph 3 coloring
+given color (r, g, b), assign color to every vertex
+2 connected vertices have diff color
 
+if not 3 colorable, at least  edge has same color
+1 / m chance of catching
+(1 - 1 / m)^{cm} < (1 / e)^c
+
+nondeterministic polynomial
+class of problems whose solutions can be verified
+efficiently. factoring a number
