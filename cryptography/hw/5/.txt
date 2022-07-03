@@ -1,0 +1,26 @@
+Q1: Consider the ZK proof for graph 3-coloring.
+What if the prover doesn't permute the colors in every iteration?
+That is, the prover permutes the colors once in the beginning 
+and then sticks to that permutation for all iterations. 
+Will the protocol still be zero-knowledge?
+
+then it will not be zero-knowledge
+let vertex set be V = {v_1, ..., v_n}
+edge set be E
+com be a commitment scheme
+forall i in n, c_i = com(v_i, color of v_i)
+since after verifier pick edge e_{i, j} in E and send e_{i, j} to prover
+prover need to open c_i and c_j
+if same permutation is used for all iterations
+then information might be derived from opening c_i and c_j
+
+Q2: Consider the multiple party computation protocol which we just saw.
+Suppose that the first and third student are colluding.
+Show that they can compute the age of the second student.
+
+let random number offset be r, 3 students be s1, s2, s3 with age a1, a2, a3
+s1 computes r + a1
+s2 computes r + a1 + a2
+s3 computes r + a1 + a2 + a3
+if s1 collude with s3, r + a1 is known from s1, a3 is known by s3, and r + a1 + a2 + a3 is also known by s3
+then (r + a1 + a2 + a3) - (r + a1) - a3 = a2
