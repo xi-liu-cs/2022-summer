@@ -4,7 +4,7 @@ That is, the prover permutes the colors once in the beginning
 and then sticks to that permutation for all iterations. 
 Will the protocol still be zero-knowledge?
 
-then it will not be zero-knowledge
+it will not be zero-knowledge
 let vertex set be V = {v_1, ..., v_n}
 edge set be E
 com be a commitment scheme
