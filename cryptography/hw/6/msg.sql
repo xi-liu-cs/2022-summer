@@ -1,7 +1,7 @@
 create table tb1
 (
 	msg text,
-	usr_id int
+	usr int
 );
 insert into tb1 values('hi', 10);
 insert into tb1 values('bye', 20);
