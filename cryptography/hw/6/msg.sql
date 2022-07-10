@@ -1,8 +1,8 @@
 create table tb1
 (
-	msg text,
-	usr int
+	usr int,
+	msg text
 );
-insert into tb1 values('hi', 10);
-insert into tb1 values('bye', 20);
+insert into tb1 values(1, 'hi');
+insert into tb1 values(0, 'bye');
 select * from tb1;
