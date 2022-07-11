@@ -1,0 +1,259 @@
+\documentclass[12pt, border = 4pt, multi]{article} % \documentclass[tikz,border = 4pt,multi]{article}
+\usepackage{lingmacros}
+\usepackage{tree-dvips}
+\usepackage{amssymb} % mathbb{}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{forest}
+\usepackage[pdftex]{hyperref}
+\usepackage{amsmath} % matrices
+\usepackage{xeCJK}
+\usepackage{tikz}
+\usepackage[arrowdel]{physics}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{listings}
+\usepackage{pgfplots, pgfplotstable}
+\usepackage{diagbox} % diagonal line in cell
+\usepackage[usestackEOL]{stackengine}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage[T1]{fontenc} 
+\setlength{\columnsep}{1cm}
+\graphicspath{{./img}} % specify the graphics path to be relative to the main .tex file, denoting the main .tex file directory as ./
+\definecolor{orchid}{rgb}{0.7, 0.4, 1.1}
+\lstset
+{ 
+  backgroundcolor = \color{white},
+  basicstyle = \scriptsize,
+  breaklines = true,
+  commentstyle = \color{comment_color}\textit,
+  keywordstyle = \color{keyword_color}\bfseries,
+  language = c++,
+  escapeinside = {\%*}{*)},          
+  extendedchars = true,              
+  frame = tb,
+  numberstyle = \tiny\color{comment_color},
+  rulecolor = \color{black},
+  showstringspaces = false,
+  stringstyle = \color{string_color},
+  upquote = true, 
+}
+\usepackage{xcolor}
+\definecolor{comment_color}{rgb}{0, 0.5, 0}
+\definecolor{keyword_color}{rgb}{0.3, 0, 0.6}
+\definecolor{string_color}{rgb}{0.5, 0, 0.1}
+\begin{document}
+\section*{}
+\textbf{Secure Message Software}\\
+\textbf{Xi Liu}\\
+\href{https://github.com/xi-liu-cs/2022-summer/tree/main/cryptography/hw/6}{code}
+\begin{multicols}{2}
+\noindent 
+Various encryption and decryption algorithms are used in this software. Rivest Shamir Adleman cryptosystem used for message encryption and digital signature. ElGamal scheme used for file or disk encryption and signature. It supports encrypted video call, multi person collaboration session. GNU Multiple Precision Library is used to handle numbers bigger than 32 or 64 bits int. In addition, it uses cellular automata random generation for encryption of raster images in graphics.\\
+\\
+Rivest Shamir Adleman encryption
+Euler's tortient function $\phi(pq) = (p - 1) \cdot (q - 1)$ since $p, q$ are prime factors of pq, integer k is coprime to pq iff it is not a
+multiple of p or q. in 0 < k < pq, there are p - 1 multiples of q
+q - 1 multiples of p, so (p - 1) + (q - 1) integers share a factor with pq
+\begin{align*}
+phi(pq) &= (\#integers < pq)\\
+&\quad- (\#integers\;not\;coprime)\\
+&= (pq - 1) - ((p - 1) + (q - 1))\\
+&= pq - 1 - p - q + 2\\
+&= pq - p - q + 1\\
+&= (p - 1)(q - 1)\\
+\end{align*}
+\begin{lstlisting}[morekeywords = {mpz_t}]
+int euclid_gcd(int a, int b)
+{
+    while(b)
+    {
+        int t = b;
+        b = a % b;
+        a = t; 
+    }
+    return a > -a ? a : -a;
+}
+
+mpz_t rsa_encryption(char * msg)
+{
+	int p = ...,
+	q = ...,
+	n = p * q;
+	int e = 2;
+	/* phi(i): number of integers less than i that do not share a common factor with i */
+	int phi = (p - 1) * (q - 1);
+	/* choose encrypt e:
+	1 < e < phi(n)
+	coprime with n, phi(n) */
+	while(e < phi)
+	{
+		if(euclid_gcd(e, phi) == 1)
+			break;
+		else
+			++e;
+	}
+	int i = ...,
+	d = (i * phi + 1) / e,
+	msg = ...;
+
+	/* encryption: c = (msg ^ e) % n */
+	mpz_t _msg, _e, _n, c; 
+	mpz_init_set_str(_msg, msg, 10);
+	mpz_init_set_str(_e, e, 10);
+	mpz_init_set_str(_n, n, 10);
+	mpz_init(c);
+	mpz_powm(c, _msg, _e, _n);
+	gmp_printf("ciphertext: %Zd\n", c);
+	return c;
+}
+
+mpz_t rsa_decryption(mpz_t c)
+{
+	/* m = (c ^ d) % n */
+	char * d_str = int_str(d);
+	mpz_t _d, m;
+	mpz_init_set_str(_d, d_str, 10);
+	mpz_init(m);
+	mpz_powm(m, c, _d, _n);
+	gmp_printf("original msg: %Zd\n", m);
+	return m;
+}
+\end{lstlisting}
+each message is managed as a row in database, a snippet of the schema of a table storing messages
+\begin{lstlisting}[language = sql]
+create table tb1
+(
+	usr int, /* user id */
+	msg text /* message */
+	/* per message data */
+);
+\end{lstlisting}
+ElGamal encryption, decryption works similarly, $s := (g ^ x) ^ y\\
+c_2 * s^{-1} = (m * s) * s^{-1} = m$
+\begin{lstlisting}[morekeywords = {mpz_t, time_t, define, undef}]
+/* convert file to binary string */
+char * file_str(file * fp); 
+
+/* pk = <q, g, g ^ x> 
+   sk = <q, g, x> */
+struct elgamal_key
+{
+	mpz_t q, g, x, gx;
+};
+
+void elgamal_key_gen(elgamal_key * res)
+{
+	#define q res->q
+	#define g res->g
+	#define x res->x
+	#define gx res->gx
+
+	time_t t;
+	srand((unsigned)time(&t)); 
+	mpz_init_set_str(q, int_str(rand() % (1 << 10)), 10);
+
+	gmp_randstate_t state;
+	gmp_randinit_default(state);
+
+	mpz_init(g);
+	mpz_urandomm(g, state, q);
+
+	mpz_init(x);
+	mpz_urandomm(x, state, q); /* rand int in [0, q - 1] */
+
+	mpz_init(gx);
+	mpz_pow_ui(gx, g, mpz_get_ui(x));
+	gmp_printf("gx = %Zd\n", gx);
+
+	#undef q
+	#undef g
+	#undef x
+	#undef gx
+}
+
+void elgamal_encrypt
+(
+	mpz_t c1,
+	mpz_t c2,
+	mpz_t q,
+	mpz_t g,
+	mpz_t gx
+)
+{
+	time_t t;
+	srand((unsigned)time(&t)); 
+	
+	mpz_t y;
+	mpz_init_set_str(y, int_str(rand() % (1 << 10)), 10);
+
+	gmp_randstate_t state;
+	gmp_randinit_default(state);
+
+	mpz_init(y);
+	mpz_urandomm(y, state, q);
+}
+
+int main()
+{
+	file * fp = fopen("t.txt", "r");
+	printf("%s\n", file_str(fp));
+	elgamal_key * res = (elgamal_key *)malloc(sizeof(elgamal_key));
+	elgamal_key_gen(res);
+	gmp_printf("gx = %Zd\n", res->gx);
+}
+\end{lstlisting}
+fetch message from database, encrypt message using either RSA or ElGamal scheme, store back to database
+\begin{lstlisting}[mathescape = true]
+int callback(void * data, int argc, char ** argv, char ** header)
+{
+    char * enc[argc];
+    for(int i = 0; i < argc; ++i)
+    {
+    	enc[i] $\leftarrow$ encrypt argv[i] using
+    	rsa or elgamal encryption;
+    }
+    data = (void *)enc;
+    return 0;
+}
+int main()
+{
+    char * er;
+    sqlite3 * db;
+    char * sql_cmd1 = ..., /* fetch */
+    * sql_cmd2 = ...; /* store */
+    sqlite3_open("msgdb", &db);
+    sqlite3_exec(db, sql_cmd1, callback, 0, &er);
+    sqlite3_exec(db, sql_cmd2, callback, 0, &er);
+    sqlite3_close(db);
+}
+\end{lstlisting}
+Cellular automata can be used to encrypt raster images. A raster image is a 2 dimensional array where each cell of the array contains the pixel value in 3 numbers red, greeen, blue. A 1 dimensional cellular automata is made of an array of cells, each cell stores a state (e.g., 0 or 1). The array transform to a different array based on the states of the current array. For example, in rule 90, to proceed to the next state, each new cell state comes from the exclusive or of that cell's previous left and right neighbors.\\
+sample array:
+\begin{lstlisting}[mathescape = true]
+int cell$_0$[] $\leftarrow$ {1, 1, 1, 0}; /* state 0 */
+cell$_1$[] $\leftarrow$ {1, 0, 1, 0}; /* state 1 */
+since
+cell$_1$[0] $\leftarrow$ cell$_0$[-1] xor cell$_0$[1] = 0 xor 1 = 1
+cell$_1$[1] $\leftarrow$ cell$_0$[0] xor cell$_0$[2] = 1 xor 1 = 0
+cell$_1$[2] $\leftarrow$ cell$_0$[1] xor cell$_0$[3] = 1 xor 0 = 1
+cell$_1$[3] $\leftarrow$ cell$_0$[2] xor cell$_0$[$(3 + 1) \mod 4$] = 1 xor 1 = 0
+\end{lstlisting}
+table:
+{\scriptsize
+\begin{tabular}{ccccccccc}
+current & 111 & 110 & 101 & 100 & 011 & 010 & 001 & 000\\
+new & 0 & 1 & 0 & 1 & 1 & 0 & 1 & 0
+\end{tabular}
+}
+rule 90 is called 90 because $(1011010)_2 = 2^6 + 2^4 + 2^3 + 2^1 = 64 + 16 + 8 + 2 = (90)_{10}$\\
+image encryption algorithm
+\begin{lstlisting}[mathescape = true]
+for pixel p $\in$ image
+{
+    vector<byte> v = separate p into bytes;
+    alternatively apply cellular automata rule 30 and 90 to each byte;
+}
+\end{lstlisting}
+\end{multicols}
+\end{document}
