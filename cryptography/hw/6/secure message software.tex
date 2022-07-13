@@ -1,0 +1,643 @@
+\documentclass[12pt, border = 4pt, multi]{article} % \documentclass[tikz,border = 4pt,multi]{article}
+\usepackage{lingmacros}
+\usepackage{tree-dvips}
+\usepackage{amssymb} % mathbb{}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{forest}
+\usepackage[pdftex]{hyperref}
+\usepackage{amsmath} % matrices
+\usepackage{xeCJK}
+\usepackage{tikz}
+\usepackage[arrowdel]{physics}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{listings}
+\usepackage{pgfplots, pgfplotstable}
+\usepackage{diagbox} % diagonal line in cell
+\usepackage[usestackEOL]{stackengine}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage[T1]{fontenc} 
+\setlength{\columnsep}{1cm}
+\graphicspath{{./img}} % specify the graphics path to be relative to the main .tex file, denoting the main .tex file directory as ./
+\definecolor{orchid}{rgb}{0.7, 0.4, 1.1}
+\lstset
+{ 
+  backgroundcolor = \color{white},
+  basicstyle = \scriptsize,
+  breaklines = true,
+  commentstyle = \color{comment_color}\textit,
+  keywordstyle = \color{keyword_color}\bfseries,
+  language = c++,
+  escapeinside = {\%*}{*)},          
+  extendedchars = true,              
+  frame = tb,
+  numberstyle = \tiny\color{comment_color},
+  rulecolor = \color{black},
+  showstringspaces = false,
+  stringstyle = \color{string_color},
+  upquote = true, 
+}
+\usepackage{xcolor}
+\definecolor{comment_color}{rgb}{0, 0.5, 0}
+\definecolor{keyword_color}{rgb}{0.3, 0, 0.6}
+\definecolor{string_color}{rgb}{0.5, 0, 0.1}
+\begin{document}
+\section*{Secure Message Software - Final Report}
+Xi Liu, Qichen Huang, Zheyuan Gao, Zicheng Hao\\
+\subsection*{Overview}
+\textbf{Qichen Huang's section begin:}
+\begin{multicols}{2}
+\noindent 
+Nowadays, as the technology developed at a fast pace, people rely more and more on digital transmission and storage of information, some of which is extremely crucial and confidential of its organization, country and people, and it could be catastrophic if they are used by hackers with malicious purposes. Thus, the demand of secure messaging software remains very high. In our study we build an application using web sockets with an end-to-end encryption layer, encrypted mainly by RSA for messaging and AES for files transmission. Our main workflow considers three parts: design, implementation, and testing. \\
+\\
+For general app design, we focus mainly on the chat room feature itself and keeping the interaction simple. We use web sockets to implement the real-time chatting feature, including socket.io with JavaScript and web socket implemented using Python. Our design of style is kept minimal. Below is a simple set up of socket.io in JavaScript. \\
+\begin{lstlisting}
+var express = require("express");
+var app = express();
+var port = process.env.PORT || 8000;
+
+// set up the views
+app.set('views', __dirname + '/views');
+app.set('view engine', "jade");
+app.engine('jade', require('jade').__express);
+app.get("/", function(req, res){
+    res.render("page");
+});
+
+// set up the listener
+app.use(express.static(__dirname + '/public'));
+var thePort = app.listen(port, function () {
+    console.log('Node.js listening on port ' + port);
+})
+
+var io = require('socket.io').listen(thePort);
+// set up socket connection
+io.sockets.on('connection', function (socket) {
+    socket.emit('message', { message: 'Welcome to the Secure Messenger' });
+    socket.on('send', function (data) {
+        io.sockets.emit('message', data);
+    });
+});
+\end{lstlisting}
+
+For implementation design, the programming languages include HTML, CSS, JavaScript, Python, SQL. Our security layer mainly uses RSA and it has been implemented with demonstration in the following pages, while our AES technology is still at a theory phase. Therefore the chat room is limited to messaging only at this time, file sharing is not yet supported. For the chat room design, it is designed to be grouped chat, people within the same group can see the contents which are shared to this group. Therefore the management and authentication of users is crucial, which is achieved by storing in a database. The storage of a user's authentication will be encrypted in the future as well to prevent the possibility of database leaking, preferably as a one-way hash function. Below is a demonstration of a login page with full error handling. With the first part being the server-side node.js, and the second part being the client side.\\
+
+\begin{lstlisting}
+'use strict';
+
+const express = require("express");
+const Datastore = require('nedb');
+const bodyParser = require("body-parser");
+let jsonParser = bodyParser.json();
+require('dotenv').config();
+
+const app = express();
+const database = new Datastore({filename: 'database.db', autoload: true});
+const STATUS = 200;
+const INVALID = 400;
+const PORT_CODE = 8826;
+const PORT = process.env.PORT || PORT_CODE;
+
+/** Respond to GET request, returns plain text indicating whether user is registered. */
+app.get("/users/:name", (req, res) => {
+  if (req === undefined) {
+    res.status(INVALID).send("Error: Invalid Fetch");
+  }
+  database.find({name: req.params.name}, (err, data) => {
+    res.send(determineRes(err, data, req.params.name));
+  });
+});
+
+/**
+ * A function that returns the desired output to send to the client side.
+ * @param {String} err - error caught
+ * @param {array} data - an array of object found
+ * @param {String} user - the name of the user to be displayed.
+ * @return {String} returns the desired string for the client side.
+ */
+function determineRes(err, data, user) {
+  if (err) {
+    return err;
+  }
+  if (data.length === 0) {
+    return "Welcome, " + user + ", please sign up.";
+  }
+  return "This user already exists";
+}
+
+/** Respond to GET request, returning the user object */
+app.get("/login/:name", (req, res) => {
+  if (req === undefined) {
+    res.status(INVALID).send("Error: Invalid Fetch");
+  }
+  database.find({name: req.params.name}, (err, data) => {
+    if (err) {
+      res.send(err);
+    }
+    res.send(data);
+  });
+});
+
+/** Responds to POST fetches, reads the information and stores in database */
+app.post('/adduser', jsonParser, (request, response) => {
+  if (request === undefined) {
+    response.status(INVALID).send("Error: Invalid Fetch");
+  }
+  let data = request.body;
+  database.insert(data);
+  response.status(STATUS);
+  response.contentType('application/json');
+  response.json(data);
+});
+
+app.use(express.static('public'));
+app.use(express.json());
+app.use(bodyParser.json());
+
+app.listen(PORT);
+\end{lstlisting}
+\begin{lstlisting}
+"use strict";
+(function() {
+
+  let USER;
+
+  window.addEventListener("load", init);
+
+  /** starts the program */
+  function init() {
+    id('submit').addEventListener("click", getData);
+  }
+
+  /** fetches api with GET request to see if the user already exists in the database */
+  async function getData() {
+    id("error").textContent = "";
+    id("data").textContent = "";
+    if (id("name").value !== "") {
+      let user = id("name");
+      USER = id("name").value;
+      try {
+        let data = await fetch('/users/' + user.value);
+        if (!data.ok) {
+          throw new Error(await data.text());
+        }
+        let responseData = await data.text();
+        id("data").textContent = responseData;
+        if (responseData !== "This user already exists") {
+          changePage();
+          id('submit').addEventListener("click", addUser);
+        } else {
+          id("input-field").classList.add("hidden");
+          id("verify").classList.remove("hidden");
+          id("check").addEventListener("click", react);
+        }
+      } catch (error) {
+        id('error').textContent = error;
+      }
+    } else {
+      id("error").textContent = "Input field cannot be empty";
+    }
+    id("name").value = "";
+  }
+
+  /** Ask if the existing account belongs to the user or if they'd like to use another name */
+  function react() {
+    id("error").textContent = "";
+    id("data").textContent = "";
+    if (id("yes").checked === true) {
+      changePage();
+      id('submit').addEventListener("click", verifyUser);
+    } else {
+      id("input-field").classList.remove("hidden");
+      id("verify").classList.add("hidden");
+    }
+  }
+
+  /** Change page to password input page after username is verified */
+  function changePage() {
+    id("enter").textContent = "password: ";
+    id("input-field").classList.remove("hidden");
+    id("verify").classList.add("hidden");
+    id('submit').removeEventListener("click", getData);
+  }
+
+  /** Fetches the user's information to verify the password */
+  async function verifyUser() {
+    try {
+      let data = await fetch('/login/' + USER);
+      if (!data.ok) {
+        throw new Error(await data.text());
+      }
+      let responseData = await data.json();
+      if (responseData[0].password === id("name").value) {
+        loggedIn();
+      } else {
+        id("data").textContent = "Password Incorrect";
+      }
+    } catch (error) {
+      id('error').textContent = error;
+    }
+  }
+
+  /** Add user to database if this is a newly created account */
+  async function addUser() {
+    if (id("name").value !== "") {
+      let password = id("name").value;
+      let data = {name: USER, password};
+      let options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      };
+      try {
+        let register = await fetch('/adduser', options);
+        if (!register.ok) {
+          throw new Error(await register.text());
+        } else {
+          id("data").textContent = "You are registered!";
+        }
+      } catch (error) {
+        id('error').textContent = error;
+      }
+      loggedIn();
+    } else {
+      id("error").textContent = "Password cannot be empty";
+    }
+  }
+
+  /**
+   *Display the page after logged in, which is a short story. Note that this story is written
+   *by myself so there's no copyright information.
+   */
+  function loggedIn() {
+    id("name").value = "";
+    id("error").textContent = "";
+    id("data").textContent = "";
+    id("login-page").classList.add("hidden");
+    id("member-page").classList.remove("hidden");
+    id("log-out").addEventListener("click", logOut);
+  }
+
+  /** Log out the user and return to the log in page at the beginning */
+  function logOut() {
+    id("enter").textContent = "username: ";
+    id("member-page").classList.add("hidden");
+    id("login-page").classList.remove("hidden");
+    id('submit').removeEventListener("click", addUser);
+    id('submit').removeEventListener("click", verifyUser);
+    id('submit').addEventListener("click", getData);
+  }
+
+  /**
+   * A function that returns the element with the id.
+   * @param {String} id - a string of id name.
+   * @return {object} found element.
+   */
+  function id(id) {
+    return document.getElementById(id);
+  }
+})();
+\end{lstlisting}
+
+For security testing, we follow the OWASP guide, which is a very detailed penetration guide. In which we mainly focus on spotting the programming errors and Cryptographic failures such as:
+- Sending sensitive data in clear text, for example, using HTTP instead of HTTPS.
+- Relying on a weak cryptographic algorithm. 
+- Using default or weak keys for cryptographic functions. \\
+\\
+Overall, our application's design is kept simple, in our report we will only demonstrate in detail the way this application works and the implementation of the encryption layer.
+
+\end{multicols}
+\subsection*{Application}
+\textbf{Zheyuan Gao's section begin:}
+\begin{multicols}{2}
+\noindent 
+The framework of this encrypted messaging application consists of two python programs: the server and the user. The two programs interact with each other to form a bulletin board, which is basically a discussion board, where users can join groups and send messages in groups, and messages sent in specific groups are only visible to the users of the specific group. The essence of the project is a fully fledged user-server interaction application using sockets. \\
+\\
+First, the user of the application connects to the server set up by the server program, then the user can join any number of discussion groups and is asked to enter a username unique to the current discussion group. The server uses a loop to continuously process new user connection requests. When a new user joins a group, the server notifies all users already in the group of the new user. When a user in a group leaves a chat room, all users in the group he was in before are notified as well. When a new user joins the group, the server shows the new user the two most recent chat messages.\\
+\\
+As two programs interacting with each other, the user can enter the appropriate commands to get some basic information about the corresponding discussion group he/she is in from the server side. The "groupusers" command displays a list of all members of the currently joined discussion group, and this information is also sent to the new user when he joins the group for the first time. The "groupmessage" command allows the user to retrieve information about a specific index in a specific group. When a user wants to send a message in a discussion group, he can first enter the "groupmessage" command, followed by the number of the group he wants to select, and then the server will ask for the exact content of the message, and after the user has entered and sent the message to the server, all the users in the selected group will be After the user enters and sends the message to the server, all users in the selected group will receive the message. The format of the message consists of the group number, the sender name, the date it was sent, and the message content.\\
+\\
+The server application has a protocol design between the user and the server, and the communication between them relies on predefined commands. The server, on the other hand, relies on unicast sockets and will store a list of currently active users. When a new user joins, the server will use a new thread to handle the TCP connection with the new user. The TCP connection will remain open until the user chooses to disconnect from the server using the "exit" command. The Server program's code for handling new user connections is as follows.
+\begin{lstlisting}[language = python]
+print(f"Server is listening for new connection...")
+while True:
+    clientConn, clientAddr = serverSocket.accept()
+    print(f"Connected with: {str(clientAddr)}")
+    clientConn.send("Successfully conected to the server!".encode())
+    thread = threading.Thread(target=clientRequest, args=(clientConn, clientAddr))
+    thread.start() # start a new thread for every new clinet join the discussion
+    
+# Start the server and listening for new user to connect
+print(f"TCP discussion board server is starting...")
+serverSocket.listen()
+# A list to store all the current clients in the server
+clientList = []
+nameList = []
+# Lists to store the 5 separate lists on the server
+clientGroupList = [[] for _ in range(5)]
+nameGroupList = [[] for _ in range(5)]
+# A list to store all the message sent by clients
+messageList = []
+# A list to store all the separate group message list
+msgGroupList = [ [] for _ in range(5)]
+\end{lstlisting}
+And the code for the server to broadcast information to all users is as follows.
+\begin{lstlisting}[language = python]
+# Method to broadcast the new message to all the clients
+def UpdateMsg(msg, clientList):
+    for client in clientList:
+        client.send(msg.encode())
+\end{lstlisting}
+\\
+The client's code consists of three main parts, the method of sending messages to the server, the method of receiving messages from the server, and the method of connecting to the server.
+\begin{lstlisting}[language = python]
+# Method to send message to the server
+def postMsg():
+    while True:
+        # Always waiting for new command from the client
+        clientCommand = input("")
+        msg = clientCommand.encode()
+        clientSocket.send(msg)
+    
+# Method to receive the message from the server 
+def receiveMsg():
+    serverMsg = clientSocket.recv(msgLength).decode()
+    while serverMsg != "":
+        serverMsg = clientSocket.recv(msgLength).decode()
+        print(serverMsg)
+
+# wait until the user ask for connection
+while True: 
+    print("Enter [connect] to connect to the server")
+    userInput = input("")
+    if userInput[0:7] == connectMsg:
+        clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        clientSocket.connect(serverConfig) #connect to the server
+        recvThread = threading.Thread(target=receiveMsg)
+        recvThread.start()
+        postThread = threading.Thread(target=postMsg)
+        postThread.start()
+        break
+\end{lstlisting}
+\\
+The above is the basic framework of this information encryption software, while the related encryption procedures and security guidelines will be added to this framework. The encryption feature of this software is that the information is encrypted during transmission, thus resisting the information interception attack. The message will be encrypted when it is sent and decrypted when the correct user receives it. Such security measure constitutes the defense mechanism of the software.
+\end{multicols}
+\newpage
+\subsection*{Implementation}
+\textbf{Xi Liu's section begin:}\\
+\href{https://github.com/xi-liu-cs/2022-summer/tree/main/cryptography/hw/6}{code}
+\begin{multicols}{2}
+\noindent 
+Various encryption and decryption algorithms are used in this software. Rivest Shamir Adleman cryptosystem used for message encryption and digital signature. ElGamal scheme used for file or disk encryption and signature. It supports encrypted video call, multi person collaboration session. GNU Multiple Precision Library is used to handle numbers bigger than 32 or 64 bits. In addition, it uses cellular automata random generation for encryption of raster images in graphics.\\
+\\
+Rivest Shamir Adleman encryption\\
+1. find prime numbers $p, q$\\
+2. $n := p \cdot q$\\
+3. $\phi(n) = (p - 1) \cdot (q - 1)$, \# numbers $< n$ that share no factor with $n$\\
+4. choose encryption $e$ s.t. $1 < e < \phi(n)$, $e$ is coprime with $n$, $\phi(n)$\\
+5. choose decryption $d$ s.t. $de = 1 \mod \phi(n)$\\
+6. $c = (msg ^ e) \mod n$\\
+7. $m = (c ^ d) = (msg ^ {de}) \mod n$\\
+Euler's tortient function $\phi(i)$: number of integers less than $i$ that do not share a common factor with $i$. since prime numbers have no factors greater than 1,
+if $i$ is prime number, the $i - 1$ positive integers do not share a common factor with $i$. $if(isprime(i))\quad\phi(i) = i - 1$.\\
+$\phi(pq) = (p - 1) \cdot (q - 1)$ since\\ 
+1. let $A, B, C$ be sets containing integers coprime to and $< p, q, pq$. $|A| =
+\phi(pq)$. there is bijection $A \times B$ and $C$ by Chinese remainder theorem, $\phi$ is multiplicative function, $\phi(pq) = \phi(p) \cdot \phi(q) = (p - 1) \cdot (q - 1)$.\\
+2. $p, q$ are prime factors of $pq$, integer $k$ is coprime to $pq$ iff it is not a
+multiple of $p$ or $q$. in $0 < k < pq$, there are $p - 1$ multiples of $q$
+$q - 1$ multiples of $p$, so $(p - 1) + (q - 1)$ integers share a factor with $pq$
+\begin{align*}
+phi(pq) &= (\#integers < pq)\\
+&\quad- (\#integers\;not\;coprime)\\
+&= (pq - 1) - ((p - 1) + (q - 1))\\
+&= pq - 1 - p - q + 2\\
+&= pq - p - q + 1\\
+&= (p - 1)(q - 1)\\
+\end{align*}
+Euclid greatest common divisor\\
+$k$th step: find a quotient $q_k$, remainder $r_k$\\
+loop invariant: $r_{k - 2} = q_k * r_{k - 1} + r_k\\
+r_k = r_{k - 2} \mod r_{k - 1}$\\
+base step: $k = 0, r_{k - 2} = r_{-2} = a, r_{k - 1} = r_{-1} = b$\\
+sample input: $gcd(a = 1071, b = 462)$\\
+step $k$: equation quotient, remainder\\
+$0:\quad r_{-2} = 1071 = q_0 * (r_{-1} = 462) + r_0 q_0 = 2,\quad r_0 = 147\\
+1:\quad r_{-1} = 462 = q_1 * (r_0 = 147) + r_1 q_1 = 3,\quad r_1 = 21\\
+2:\quad r_0 = 147 = q_2 * (r_1 = 21) + r_2 q_2 = 7,\quad r_2 = 0$\\
+so function gcd() returns $r_1 = 21$
+\begin{lstlisting}[morekeywords = {mpz_t}]
+int euclid_gcd(int a, int b)
+{
+    while(b)
+    {
+        int t = b;
+        b = a % b;
+        a = t; 
+    }
+    return a > -a ? a : -a;
+}
+
+mpz_t rsa_encryption(char * msg)
+{
+	int p = ...,
+	q = ...,
+	n = p * q;
+	int e = 2;
+	/* phi(i): number of integers less than i that do not share a common factor with i */
+	int phi = (p - 1) * (q - 1);
+	/* choose encrypt e:
+	1 < e < phi(n)
+	coprime with n, phi(n) */
+	while(e < phi)
+	{
+		if(euclid_gcd(e, phi) == 1)
+			break;
+		else
+			++e;
+	}
+	int i = ...,
+	d = (i * phi + 1) / e,
+	msg = ...;
+
+	/* encryption: c = (msg ^ e) % n */
+	mpz_t _msg, _e, _n, c; 
+	mpz_init_set_str(_msg, msg, 10);
+	mpz_init_set_str(_e, e, 10);
+	mpz_init_set_str(_n, n, 10);
+	mpz_init(c);
+	mpz_powm(c, _msg, _e, _n);
+	gmp_printf("ciphertext: %Zd\n", c);
+	return c;
+}
+
+mpz_t rsa_decryption(mpz_t c)
+{
+	/* m = (c ^ d) % n */
+	char * d_str = int_str(d);
+	mpz_t _d, m;
+	mpz_init_set_str(_d, d_str, 10);
+	mpz_init(m);
+	mpz_powm(m, c, _d, _n);
+	gmp_printf("original msg: %Zd\n", m);
+	return m;
+}
+\end{lstlisting}
+each message is managed as a row in database, a snippet of the schema of a table storing messages
+\begin{lstlisting}[language = sql]
+create table tb1
+(
+	usr int, /* user id */
+	msg text /* message */
+	/* per message data */
+);
+\end{lstlisting}
+ElGamal encryption\\
+let $\mathbb{G}$ be a cyclic group with order $q$ and generator $g$\\
+$<\mathbb{G}, q, g> \leftarrow gen(1 ^ n)\\
+x \leftarrow \mathbb{Z}_q$\\
+public key $pk = <\mathbb{G}, q, g, g^x>$\\
+secret key $sk = <\mathbb{G}, q, g, x>$\\
+encrypt message $m$ using $pk$ and random $y \leftarrow \mathbb{Z}_q$\\
+cipher $<c_1, c_2> \leftarrow <g ^ y, (g ^ x) ^ y \cdot m >$\\
+decrypt cipher $<c_1, c_2>$ using $sk$\\
+\[\frac{c_2}{c_1 ^ x} = \frac{(g ^ x) ^ y \cdot m}{(g ^ y) ^ x} = \frac{g ^ {xy} \cdot m}{g ^ {xy}} = m\]
+\begin{lstlisting}[morekeywords = {mpz_t, time_t, define, undef}]
+/* convert file to binary string */
+char * file_str(file * fp); 
+
+/* pk = <q, g, g ^ x> 
+   sk = <q, g, x> */
+struct elgamal_key
+{
+	mpz_t q, g, x, gx;
+};
+
+void elgamal_key_gen(elgamal_key * res)
+{
+	#define q res->q
+	#define g res->g
+	#define x res->x
+	#define gx res->gx
+
+	time_t t;
+	srand((unsigned)time(&t)); 
+	mpz_init_set_str(q, int_str(rand() % (1 << 10)), 10);
+
+	gmp_randstate_t state;
+	gmp_randinit_default(state);
+
+	mpz_init(g);
+	mpz_urandomm(g, state, q);
+
+	mpz_init(x);
+	mpz_urandomm(x, state, q); /* rand int in [0, q - 1] */
+
+	mpz_init(gx);
+	mpz_pow_ui(gx, g, mpz_get_ui(x));
+	gmp_printf("gx = %Zd\n", gx);
+
+	#undef q
+	#undef g
+	#undef x
+	#undef gx
+}
+
+void elgamal_encrypt
+(
+	mpz_t c1,
+	mpz_t c2,
+	mpz_t q,
+	mpz_t g,
+	mpz_t gx
+)
+{
+	time_t t;
+	srand((unsigned)time(&t)); 
+	
+	mpz_t y;
+	mpz_init_set_str(y, int_str(rand() % (1 << 10)), 10);
+
+	gmp_randstate_t state;
+	gmp_randinit_default(state);
+
+	mpz_init(y);
+	mpz_urandomm(y, state, q);
+}
+
+int main()
+{
+	file * fp = fopen("t.txt", "r");
+	printf("%s\n", file_str(fp));
+	elgamal_key * res = (elgamal_key *)malloc(sizeof(elgamal_key));
+	elgamal_key_gen(res);
+	gmp_printf("gx = %Zd\n", res->gx);
+}
+\end{lstlisting}
+fetch message from database, encrypt message using either RSA or ElGamal scheme, store back to database
+\begin{lstlisting}[mathescape = true]
+int callback(void * data, int argc, char ** argv, char ** header)
+{
+    char * enc[argc];
+    for(int i = 0; i < argc; ++i)
+    {
+    	enc[i] $\leftarrow$ encrypt argv[i] using
+    	rsa or elgamal encryption;
+    }
+    data = (void *)enc;
+    return 0;
+}
+int main()
+{
+    char * er;
+    sqlite3 * db;
+    char * sql_cmd1 = ..., /* fetch */
+    * sql_cmd2 = ...; /* store */
+    sqlite3_open("msgdb", &db);
+    sqlite3_exec(db, sql_cmd1, callback, 0, &er);
+    sqlite3_exec(db, sql_cmd2, callback, 0, &er);
+    sqlite3_close(db);
+}
+\end{lstlisting}
+Cellular automata can be used to encrypt raster images. A raster image is a 2 dimensional array where each cell of the array contains the pixel value in 3 numbers red, greeen, blue. A 1 dimensional cellular automata is made of an array of cells, each cell stores a state (e.g., 0 or 1). The array transforms to a different array based on the states of the current array. For example, in rule 90, to proceed to the next state, each new cell state comes from the exclusive or of that cell's previous left and right neighbors.\\
+sample array:
+\begin{lstlisting}[mathescape = true]
+int cell$_0$[] $\leftarrow$ {1, 1, 1, 0}; /* state 0 */
+cell$_1$[] $\leftarrow$ {1, 0, 1, 0}; /* state 1 */
+since
+cell$_1$[0] $\leftarrow$ cell$_0$[-1] xor cell$_0$[1] = 0 xor 1 = 1
+cell$_1$[1] $\leftarrow$ cell$_0$[0] xor cell$_0$[2] = 1 xor 1 = 0
+cell$_1$[2] $\leftarrow$ cell$_0$[1] xor cell$_0$[3] = 1 xor 0 = 1
+cell$_1$[3] $\leftarrow$ cell$_0$[2] xor cell$_0$[$(3 + 1) \mod 4$] = 1 xor 1 = 0
+\end{lstlisting}
+table:\\
+{\scriptsize
+\begin{tabular}{ccccccccc}
+current & 111 & 110 & 101 & 100 & 011 & 010 & 001 & 000\\
+new & 0 & 1 & 0 & 1 & 1 & 0 & 1 & 0
+\end{tabular}
+}
+rule 90 is called 90 because $(1011010)_2 = 2^6 + 2^4 + 2^3 + 2^1 = 64 + 16 + 8 + 2 = (90)_{10}$\\
+image encryption algorithm
+\begin{lstlisting}[mathescape = true]
+for pixel p $\in$ image
+{
+    vector<byte> v = separate p into bytes;
+    alternatively apply cellular automata rule 30 and 90 to each byte;
+}
+\end{lstlisting}
+\end{multicols}
+\textbf{Zicheng Hao's section begin:}\\
+\noindent
+Zicheng Hao shortly introduced advanced encrypting standard as a complement. The AES algorithm (also known as the rijndael algorithm) is a symmetric block cipher algorithm that takes a block size of 128 bits and converts them into ciphertext using keys of 128, 192, and 256 bits. 
+
+
+\subsection*{Conclusion}
+\textbf{Qichen Huang's section begin:}
+\begin{multicols}{2}
+\noindent 
+In this report, we firstly showed the overall design of the application itself, with a few basic setups and an overview of how we are going to write this app, then we introduced how does the chat feature work and how is it implemented using sockets. It is then followed by a detailed illustration of the implementation of the encryption layer, including a detailed RSA implementation and an AES conceptual research. After testing, the result from the algorithm seems promising. Looking forward, after solving the problem of file or large data transfer being slow, more and more secure messaging software are able to reach a very secure point which is nearly impossible for hackers to break the ciphertext itself. In addition to technological security, user's awareness of avoiding phishing techniques and exposing crucial authentication information should be raised as well to fully protect one's privacy, information, and well-being.
+\end{multicols}
+\end{document}
