@@ -1,0 +1,24 @@
+es(ecma script) (ecma, european computer manufacturers association)
+
+  if(es module scope)
+      use import fs from 'fs'
+      package.json file = 
+      {
+        "type": "module",	
+        "dependencies": 
+        {
+          "printf": "^0.6.1"
+        }
+      }
+
+  else
+      let fs = require('fs'); 
+      package.json file = 
+      {
+        "dependencies": 
+        {
+          "printf": "^0.6.1"
+        }
+      }
+      
+why "let fs = require('fs');" do not work in browser console but works locally using "node 6.js"?
