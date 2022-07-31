@@ -13,8 +13,8 @@ var fragment =
 
 function main() 
 {
-  var canvas = document.getElementById('0');
-  var gl = canvas.getContext('webgl');
+  canvas = document.getElementById('0');
+  gl = canvas.getContext('webgl');
 
   vertex_shader = gl.createShader(gl.VERTEX_SHADER);
   gl.shaderSource(vertex_shader, vertex);
